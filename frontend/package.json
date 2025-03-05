@@ -9,24 +9,25 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@tailwindcss/postcss": "^4.0.9",
+    "@tanstack/react-query": "^5.0.0",
+    "@tensorflow/tfjs": "^4.15.0",
+    "axios": "^1.6.0",
+    "framer-motion": "^11.0.0",
     "next": "^15.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "framer-motion": "^11.0.0",
-    "@tanstack/react-query": "^5.0.0",
-    "zustand": "^4.5.0",
-    "tailwindcss": "^4.0.0",
     "socket.io-client": "^4.7.0",
-    "axios": "^1.6.0",
-    "@tensorflow/tfjs": "^4.15.0"
+    "tailwindcss": "^4.0.0",
+    "zustand": "^4.5.0"
   },
   "devDependencies": {
-    "typescript": "^5.5.0",
-    "@types/react": "^19.0.0",
     "@types/node": "^20.10.0",
+    "@types/react": "^19.0.0",
     "autoprefixer": "^10.4.16",
-    "postcss": "^8.4.31",
     "eslint": "^8.55.0",
-    "eslint-config-next": "^15.0.0"
+    "eslint-config-next": "^15.0.0",
+    "postcss": "^8.4.31",
+    "typescript": "^5.5.0"
   }
 }
