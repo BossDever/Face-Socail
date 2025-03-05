@@ -19,7 +19,7 @@ def preprocess_face(img, required_size=(160, 160)):
         img = cv2.cvtColor(img, cv2.COLOR_RGBA2RGB)
     
     # ปรับขนาด
-img = cv2.resize(img, required_size)
+    img = cv2.resize(img, required_size)
     
     # แปลงให้อยู่ในช่วง [-1, 1]
     img = img.astype(np.float32)
