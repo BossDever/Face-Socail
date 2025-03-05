@@ -18,6 +18,8 @@ export default function Home() {
     queryFn: checkHealth,
     retry: 3,
     staleTime: 60000, // 1 นาที
+    // แก้ไขเพื่อป้องกัน hydration error
+    enabled: typeof window !== 'undefined',
   });
   
   // อัปเดตสถานะ API
