@@ -1,10 +1,11 @@
-import type { Metadata } from 'next'
-import './globals.css'
+import type { Metadata } from 'next';
+import './globals.css';
+import { Providers } from './providers';
 
 export const metadata: Metadata = {
   title: 'FaceSocial',
   description: 'แพลตฟอร์มโซเชียลมีเดียด้วยเทคโนโลยีจดจำใบหน้า',
-}
+};
 
 export default function RootLayout({
   children,
@@ -13,7 +14,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="th">
-      <body>{children}</body>
+      <body>
+        <Providers>
+          {children}
+        </Providers>
+      </body>
     </html>
-  )
+  );
 }
