@@ -267,11 +267,14 @@ export const faceLogin = async (req: Request, res: Response) => {
       });
     }
     
-    // ดึงทุกผู้ใช้ที่มี face embeddings
+    // ดึงทุกผู้ใช้ที่มี face embeddings - แก้ไขวิธีการตรวจสอบว่าไม่เป็น null
     const users = await prisma.user.findMany({
       where: {
-        faceEmbeddings: {
-          not: null
+        // ใช้ NOT ร่วมกับ is แทนการใช้ not: null โดยตรง
+        NOT: {
+          faceEmbeddings: {
+            equals: undefined
+          }
         }
       }
     });
