@@ -8,6 +8,25 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+// กำหนด interfaces สำหรับ response จาก AI Service
+interface EmbeddingResponse {
+  status: string;
+  embedding: number[];
+  quality?: {
+    score: number;
+    feedback: string;
+  };
+  face_box?: number[];
+}
+
+interface CompareResponse {
+  status: string;
+  is_same_person: boolean;
+  confidence: number;
+  distance: number;
+  threshold: number;
+}
+
 // Schema สำหรับตรวจสอบข้อมูลการลงทะเบียน
 const registerSchema = z.object({
   username: z.string().min(3).max(30),
@@ -82,12 +101,12 @@ export const register = async (req: Request, res: Response) => {
     const hashedPassword = await bcrypt.hash(validatedData.password, 10);
     
     // สร้าง face embeddings ถ้ามีรูปภาพใบหน้า
-    let faceEmbeddingsData = null;
+    let faceEmbeddingsData: number[][] | null = null;
     if (validatedData.faceImages && validatedData.faceImages.length > 0) {
       // ส่งรูปภาพไปยัง AI Service เพื่อสร้าง embeddings
       try {
         const embeddingsPromises = validatedData.faceImages.map(async (faceImage) => {
-          const response = await axios.post(
+          const response = await axios.post<EmbeddingResponse>(
             `${process.env.AI_SERVICE_URL}/api/face/recognition/embeddings`,
             { image: faceImage },
             {
@@ -107,7 +126,7 @@ export const register = async (req: Request, res: Response) => {
         const embeddings = await Promise.all(embeddingsPromises);
         
         // กรองเอาเฉพาะค่าที่ไม่ใช่ null
-        const validEmbeddings = embeddings.filter(emb => emb !== null);
+        const validEmbeddings = embeddings.filter((emb): emb is number[] => emb !== null);
         
         if (validEmbeddings.length > 0) {
           faceEmbeddingsData = validEmbeddings;
@@ -221,9 +240,9 @@ export const faceLogin = async (req: Request, res: Response) => {
     const validatedData = faceLoginSchema.parse(req.body);
     
     // ส่งรูปภาพไปยัง AI Service เพื่อสร้าง embedding
-    let faceEmbedding;
+    let faceEmbedding: number[] | null = null;
     try {
-      const response = await axios.post(
+      const response = await axios.post<EmbeddingResponse>(
         `${process.env.AI_SERVICE_URL}/api/face/recognition/embeddings`,
         { image: validatedData.faceImage },
         {
@@ -251,8 +270,8 @@ export const faceLogin = async (req: Request, res: Response) => {
     // ดึงทุกผู้ใช้ที่มี face embeddings
     const users = await prisma.user.findMany({
       where: {
-        NOT: {
-          faceEmbeddings: null
+        faceEmbeddings: {
+          not: null
         }
       }
     });
@@ -264,12 +283,12 @@ export const faceLogin = async (req: Request, res: Response) => {
     for (const user of users) {
       if (!user.faceEmbeddings) continue;
       
-      const userEmbeddings = JSON.parse(user.faceEmbeddings as string);
+      const userEmbeddings = JSON.parse(user.faceEmbeddings as string) as number[][];
       
       // เปรียบเทียบ embedding กับทุก embedding ของผู้ใช้
       for (const userEmbedding of userEmbeddings) {
         try {
-          const compareResponse = await axios.post(
+          const compareResponse = await axios.post<CompareResponse>(
             `${process.env.AI_SERVICE_URL}/api/face/recognition/compare`,
             { 
               embedding1: faceEmbedding, 
