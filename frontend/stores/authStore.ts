@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { User, login, faceLogin, register, LoginCredentials, FaceLoginData, RegisterData } from '../lib/api';
+import { User, login, faceLogin, register, LoginCredentials, FaceLoginData, RegisterData } from '@/lib/api';
 
 // Interface สำหรับ Auth Store
 interface AuthState {
